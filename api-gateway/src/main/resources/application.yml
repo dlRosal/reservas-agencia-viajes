@@ -12,10 +12,12 @@ spring:
           uri: lb://HOTELES-SERVICE
           predicates:
             - Path=/hoteles/**
+
         - id: vuelos-service
           uri: lb://VUELOS-SERVICE
           predicates:
             - Path=/vuelos/**
+
         - id: reservas-service
           uri: lb://RESERVAS-SERVICE
           predicates:
@@ -25,3 +27,5 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
+    registerWithEureka: true
+    fetchRegistry: true
