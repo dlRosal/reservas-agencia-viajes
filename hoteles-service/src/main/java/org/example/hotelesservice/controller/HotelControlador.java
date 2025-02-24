@@ -1,7 +1,7 @@
-package com.agencia.controlador;
+package org.example.hotelesservice.controller;
 
-import com.agencia.modelo.Hotel;
-import com.agencia.servicio.HotelServicio;
+import org.example.hotelesservice.model.Hotel;
+import org.example.hotelesservice.service.HotelServicio;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
