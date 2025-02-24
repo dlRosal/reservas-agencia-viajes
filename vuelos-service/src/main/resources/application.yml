@@ -8,7 +8,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/vuelos_db
     username: root
-    password: admin
+    password:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
