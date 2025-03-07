@@ -1,22 +1,22 @@
 package org.example.authservice.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
 import java.util.Set;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
+@Table(name = "users")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String username;
+
+    @Column(nullable = false)
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -26,11 +26,4 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
-
-    public String[] getRoleNames() {
-        return roles.stream()
-                .map(role -> role.getName().name().replace("ROLE_", "")) // Convertimos el ENUM a String antes de usar replace
-                .toArray(String[]::new);
-    }
-
 }
