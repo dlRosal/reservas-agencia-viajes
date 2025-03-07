@@ -2,6 +2,8 @@ package org.example.authservice.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
@@ -32,8 +34,8 @@ public class JwtUtil {
                 .compact();
     }
 
-    public boolean validateToken(String token, String username) {
-        return username.equals(extractUsername(token)) && !isTokenExpired(token); // Verifica usuario y expiración
+    public boolean validateToken(String token) {
+        return !isTokenExpired(token);
     }
 
     public String extractUsername(String token) {
@@ -50,6 +52,6 @@ public class JwtUtil {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return claimsResolver.apply(claims); // Extrae información específica
+        return claimsResolver.apply(claims);
     }
 }
