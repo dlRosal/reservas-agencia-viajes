@@ -22,7 +22,7 @@ public class VueloControlador {
         return vueloServicio.listarVuelos();
     }
 
-    // 🔥 Nuevo método para obtener un vuelo por ID
+    //metodo para obtener un vuelo por ID
     @GetMapping("/{id}")
     public ResponseEntity<Vuelo> obtenerVueloPorId(@PathVariable Integer id) {
         return vueloServicio.obtenerVueloPorId(id)
@@ -30,6 +30,7 @@ public class VueloControlador {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    //metodo para actualizar las plazas
     @PutMapping("/{id}/actualizarPlazas/{cantidad}")
     public ResponseEntity<String> actualizarPlazas(@PathVariable Integer id, @PathVariable int cantidad) {
         try {

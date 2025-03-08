@@ -36,7 +36,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // No mantener sesiones
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/register", "/auth/login", "/auth/logout").permitAll()  // 🔥 Agregado "/auth/logout"
+                        .requestMatchers("/auth/register", "/auth/login", "/auth/logout").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN") // Solo ADMIN accede a rutas /admin/**
                         .requestMatchers("/user/**").hasRole("USER") // Solo usuarios autenticados acceden a /user/**
                         .anyRequest().authenticated() // Cualquier otra ruta requiere autenticación

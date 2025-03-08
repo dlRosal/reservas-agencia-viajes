@@ -23,7 +23,7 @@ public class ReservaControlador {
         this.reservaServicio = reservaServicio;
     }
 
-    // ✅ Obtener todas las reservas
+    // Obtener todas las reservas
     @GetMapping
     public ResponseEntity<List<Reserva>> listarReservas() {
         try {
@@ -35,7 +35,7 @@ public class ReservaControlador {
         }
     }
 
-    // ✅ Obtener reserva por ID
+    // Obtener reserva por ID
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerReserva(@PathVariable Integer id) {
         try {
@@ -47,7 +47,7 @@ public class ReservaControlador {
         }
     }
 
-    // ✅ Crear una nueva reserva
+    // Crear una nueva reserva
     @PostMapping
     public ResponseEntity<?> agregarReserva( @RequestBody Reserva reserva) {
         try {

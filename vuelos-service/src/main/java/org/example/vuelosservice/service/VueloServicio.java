@@ -20,7 +20,7 @@ public class VueloServicio {
         return vueloRepositorio.findAll();
     }
 
-    // 🔥 Nuevo método para obtener un vuelo por ID
+    // Metodo para obtener un vuelo por ID
     public Optional<Vuelo> obtenerVueloPorId(Integer id) {
         return vueloRepositorio.findById(id);
     }

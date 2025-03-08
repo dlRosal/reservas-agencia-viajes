@@ -22,7 +22,7 @@ public class HotelControlador {
         return hotelServicio.listarHoteles();
     }
 
-    // 🔥 Nuevo método para obtener hotel por ID
+    // Metodo para obtener hotel por ID
     @GetMapping("/{id}")
     public ResponseEntity<Hotel> obtenerHotelPorId(@PathVariable Integer id) {
         return hotelServicio.obtenerHotelPorId(id)
