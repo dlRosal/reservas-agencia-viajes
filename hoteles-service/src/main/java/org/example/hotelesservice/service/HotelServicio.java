@@ -5,6 +5,7 @@ import org.example.hotelesservice.repository.HotelRepositorio;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class HotelServicio {
@@ -19,15 +20,8 @@ public class HotelServicio {
         return hotelRepositorio.findAll();
     }
 
-    public Hotel obtenerHotelPorId(Integer id) {
-        return hotelRepositorio.findById(id).orElse(null);
-    }
-
-    public Hotel guardarHotel(Hotel hotel) {
-        return hotelRepositorio.save(hotel);
-    }
-
-    public void eliminarHotel(Integer id) {
-        hotelRepositorio.deleteById(id);
+    // 🔥 Nuevo método para obtener hotel por ID
+    public Optional<Hotel> obtenerHotelPorId(Integer id) {
+        return hotelRepositorio.findById(id);
     }
 }

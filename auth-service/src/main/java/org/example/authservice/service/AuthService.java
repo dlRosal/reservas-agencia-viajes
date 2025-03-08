@@ -1,58 +1,55 @@
 package org.example.authservice.service;
 
-import org.example.authservice.model.RoleType;
-import org.example.authservice.security.JwtUtil;
-import org.example.authservice.model.User;
 import org.example.authservice.model.Role;
+import org.example.authservice.model.RoleType;
+import org.example.authservice.model.User;
 import org.example.authservice.repository.UserRepository;
 import org.example.authservice.repository.RoleRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 /**
  * Servicio de autenticación:
  * - Registro de usuario.
- * - Validación de credenciales y generación de token.
+ * - Validación de credenciales (sin JWT).
  */
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;  // 🔥 Agregamos el repositorio de roles
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
 
-    public AuthService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+    public AuthService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository; // 🔥 Inyectamos el repositorio de roles
+        this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
     }
 
     public User register(User user) {
-        // 🔥 Buscar el rol "ROLE_USER" en la base de datos
-        Role defaultRole = roleRepository.findByName(RoleType.valueOf("ROLE_USER"))
-                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
-
-        user.setPassword(passwordEncoder.encode(user.getPassword())); // Encripta la contraseña
-        user.setRoles(Set.of(defaultRole));  // 🔥 Asigna el rol "ROLE_USER"
-
-        return userRepository.save(user); // Guarda en la base de datos
-    }
-
-    public Map<String, String> login(User user) {
-        User dbUser = userRepository.findByUsername(user.getUsername())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-        if (!passwordEncoder.matches(user.getPassword(), dbUser.getPassword())) {
-            throw new RuntimeException("Contraseña incorrecta");
+        // Verificar si el usuario ya existe en la base de datos
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new RuntimeException("El usuario ya existe");
         }
 
-        String token = jwtUtil.generateToken(user.getUsername()); // Genera JWT
-        return Collections.singletonMap("token", token);
+        // Buscar o crear el rol USER
+        Role defaultRole = roleRepository.findByName(RoleType.USER)
+                .orElseGet(() -> {
+                    Role newRole = new Role();
+                    newRole.setName(RoleType.USER);
+                    return roleRepository.save(newRole); // Guarda el rol en la BD si no existe
+                });
+
+        // Encriptar la contraseña antes de guardarla
+        user.setPassword(passwordEncoder.encode(user.getPassword())); // Encripta antes de guardar
+
+        // Asignar rol por defecto
+        user.setRoles(Collections.singleton(defaultRole));
+
+        // Guardar usuario en la base de datos
+        return userRepository.save(user);
     }
 }

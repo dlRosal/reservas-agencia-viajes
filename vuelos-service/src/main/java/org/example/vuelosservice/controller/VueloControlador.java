@@ -2,6 +2,7 @@ package org.example.vuelosservice.controller;
 
 import org.example.vuelosservice.model.Vuelo;
 import org.example.vuelosservice.service.VueloServicio;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,18 +22,21 @@ public class VueloControlador {
         return vueloServicio.listarVuelos();
     }
 
+    // 🔥 Nuevo método para obtener un vuelo por ID
     @GetMapping("/{id}")
-    public Vuelo obtenerVuelo(@PathVariable Integer id) {
-        return vueloServicio.obtenerVueloPorId(id);
+    public ResponseEntity<Vuelo> obtenerVueloPorId(@PathVariable Integer id) {
+        return vueloServicio.obtenerVueloPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public Vuelo agregarVuelo(@RequestBody Vuelo vuelo) {
-        return vueloServicio.guardarVuelo(vuelo);
-    }
-
-    @DeleteMapping("/{id}")
-    public void eliminarVuelo(@PathVariable Integer id) {
-        vueloServicio.eliminarVuelo(id);
+    @PutMapping("/{id}/actualizarPlazas/{cantidad}")
+    public ResponseEntity<String> actualizarPlazas(@PathVariable Integer id, @PathVariable int cantidad) {
+        try {
+            vueloServicio.actualizarPlazas(id, cantidad);
+            return ResponseEntity.ok("Plazas actualizadas correctamente.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

@@ -2,6 +2,7 @@ package org.example.hotelesservice.controller;
 
 import org.example.hotelesservice.model.Hotel;
 import org.example.hotelesservice.service.HotelServicio;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,18 +22,11 @@ public class HotelControlador {
         return hotelServicio.listarHoteles();
     }
 
+    // 🔥 Nuevo método para obtener hotel por ID
     @GetMapping("/{id}")
-    public Hotel obtenerHotel(@PathVariable Integer id) {
-        return hotelServicio.obtenerHotelPorId(id);
-    }
-
-    @PostMapping
-    public Hotel agregarHotel(@RequestBody Hotel hotel) {
-        return hotelServicio.guardarHotel(hotel);
-    }
-
-    @DeleteMapping("/{id}")
-    public void eliminarHotel(@PathVariable Integer id) {
-        hotelServicio.eliminarHotel(id);
+    public ResponseEntity<Hotel> obtenerHotelPorId(@PathVariable Integer id) {
+        return hotelServicio.obtenerHotelPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

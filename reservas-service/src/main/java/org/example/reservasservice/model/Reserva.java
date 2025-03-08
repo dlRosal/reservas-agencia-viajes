@@ -2,7 +2,7 @@ package org.example.reservasservice.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,8 +17,13 @@ public class Reserva {
     private Integer id;
 
     private String cliente;
+
+    @JsonProperty("idHotel")  // Mapea correctamente el JSON con la variable en Java
     private Integer idHotel;
+
+    @JsonProperty("idVuelo")
     private Integer idVuelo;
+
     private LocalDateTime fechaReserva;
     private double total;
 
@@ -27,13 +32,7 @@ public class Reserva {
 
     @PrePersist
     public void prePersist() {
-        this.fechaReserva = LocalDateTime.now();
-        this.estado = EstadoReserva.PENDIENTE;
+        this.fechaReserva = (this.fechaReserva == null) ? LocalDateTime.now() : this.fechaReserva;
+        this.estado = (this.estado == null) ? EstadoReserva.PENDIENTE : this.estado;
     }
-}
-
-enum EstadoReserva {
-    PENDIENTE,
-    CONFIRMADA,
-    CANCELADA
 }

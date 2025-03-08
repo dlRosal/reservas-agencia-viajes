@@ -5,6 +5,7 @@ import org.example.vuelosservice.repository.VueloRepositorio;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VueloServicio {
@@ -19,15 +20,17 @@ public class VueloServicio {
         return vueloRepositorio.findAll();
     }
 
-    public Vuelo obtenerVueloPorId(Integer id) {
-        return vueloRepositorio.findById(id).orElse(null);
+    // 🔥 Nuevo método para obtener un vuelo por ID
+    public Optional<Vuelo> obtenerVueloPorId(Integer id) {
+        return vueloRepositorio.findById(id);
     }
 
-    public Vuelo guardarVuelo(Vuelo vuelo) {
-        return vueloRepositorio.save(vuelo);
-    }
-
-    public void eliminarVuelo(Integer id) {
-        vueloRepositorio.deleteById(id);
+    public void actualizarPlazas(Integer id, int cantidad) {
+        Vuelo vuelo = obtenerVueloPorId(id).orElseThrow(() -> new RuntimeException("Vuelo no encontrado con ID: " + id));
+        if (vuelo.getAsientosDisponibles() < cantidad) {
+            throw new RuntimeException("No hay suficientes asientos disponibles.");
+        }
+        vuelo.setAsientosDisponibles(vuelo.getAsientosDisponibles() - cantidad);
+        vueloRepositorio.save(vuelo);
     }
 }

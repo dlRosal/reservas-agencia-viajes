@@ -7,16 +7,20 @@ import lombok.*;
 @Table(name = "hoteles")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Hotel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(nullable = false)
     private String nombre;
+
+    @Column(nullable = false)
     private String ubicacion;
-    private int estrellas;
-    private double precioPorNoche;
-    private boolean disponibilidad;
+
+    @Column(nullable = false)
+    private Integer disponibilidad;
 }
