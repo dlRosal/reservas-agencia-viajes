@@ -8,25 +8,29 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: hoteles-service
-          uri: lb://HOTELES-SERVICE
-          predicates:
-            - Path=/hoteles/**
-
         - id: auth-service
           uri: lb://AUTH-SERVICE
           predicates:
             - Path=/auth/**
+          filters:
+
+        - id: hoteles-service
+          uri: lb://HOTELES-SERVICE
+          predicates:
+            - Path=/hoteles/**
+          filters:
 
         - id: vuelos-service
           uri: lb://VUELOS-SERVICE
           predicates:
             - Path=/vuelos/**
+          filters:
 
         - id: reservas-service
           uri: lb://RESERVAS-SERVICE
           predicates:
             - Path=/reservas/**
+          filters:
 
 eureka:
   client:
@@ -34,3 +38,7 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
     registerWithEureka: true
     fetchRegistry: true
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG

@@ -8,15 +8,16 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * Configuración de seguridad con Spring Security sin JWT:
- * - API REST sin sesiones, autenticación con credenciales.
- * - Se eliminan los formularios de login.
  * - Se permite acceso público a `/auth/register` y `/auth/login`.
+ * - Se requiere autenticación para cualquier otro recurso.
+ * - Se utiliza autenticación basada en credenciales sin sesiones.
  */
 @Configuration
 public class SecurityConfig {
@@ -30,18 +31,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.disable()) // Desactivar CSRF si no hay frontend manejando tokens
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // No mantener sesiones
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/register", "/auth/login").permitAll()
-                        .requestMatchers("/home").authenticated()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/auth/register", "/auth/login", "/auth/logout").permitAll()  // 🔥 Agregado "/auth/logout"
+                        .requestMatchers("/admin/**").hasRole("ADMIN") // Solo ADMIN accede a rutas /admin/**
+                        .requestMatchers("/user/**").hasRole("USER") // Solo usuarios autenticados acceden a /user/**
+                        .anyRequest().authenticated() // Cualquier otra ruta requiere autenticación
                 )
                 .formLogin(form -> form
                         .loginProcessingUrl("/auth/login") // Procesa el login aquí
                         .successHandler((request, response, authentication) -> {
                             response.setContentType("application/json");
                             response.getWriter().write("{\"message\": \"Inicio de sesión exitoso\"}");
-                        }) // Evita redirecciones al login y devuelve JSON
+                        }) // Devuelve JSON en lugar de redirigir
                         .failureHandler((request, response, exception) -> {
                             response.setContentType("application/json");
                             response.setStatus(401);
@@ -50,20 +55,17 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/auth/logout")
+                        .logoutUrl("/auth/logout") // Endpoint de logout
                         .logoutSuccessHandler((request, response, authentication) -> {
                             response.setContentType("application/json");
                             response.getWriter().write("{\"message\": \"Sesión cerrada exitosamente\"}");
                         })
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
+                        .invalidateHttpSession(true)  // 🔥 Cierra la sesión
+                        .deleteCookies("JSESSIONID")  // 🔥 Borra la cookie de sesión
                         .permitAll()
                 )
                 .build();
     }
-
-
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
