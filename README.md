@@ -5,12 +5,13 @@ Este proyecto consiste en una **aplicación de gestión de reservas de viajes** 
 
 ---
 
-## 🏗️ **Arquitectura del Proyecto**
+## 🏰️ **Arquitectura del Proyecto**
 
 🔹 **Microservicios:**
 - **Hoteles Service** 🏨 - Gestión de hoteles disponibles.
 - **Vuelos Service** ✈️ - Administración de vuelos y disponibilidad de plazas.
-- **Reservas Service** 📋 - Registro y control de reservas.
+- **Reservas Service** 👌 - Registro y control de reservas.
+- **Auth Service** 🔒 - Registro y autenticación de usuarios.
 - **API Gateway** 🚪 - Punto de entrada único para todas las peticiones.
 - **Eureka Server** 📡 - Descubrimiento de servicios.
 
@@ -21,10 +22,16 @@ Este proyecto consiste en una **aplicación de gestión de reservas de viajes** 
 🔹 **Comunicación:**
 - **Spring Cloud Netflix Eureka** para el descubrimiento de servicios.
 - **Spring Cloud Gateway** para centralizar las peticiones.
-- **`RestTemplate` y `WebClient`** para comunicación entre microservicios.
+- **`RestTemplate`** para comunicación entre microservicios.
 
 🔹 **Seguridad:**
-- **Spring Security + JWT** (próximo paso).
+- **Spring Security sin JWT**.
+- **Autenticación con credenciales y sesiones**.
+- **Control de acceso en API Gateway**.
+
+🔹 **Frontend:**
+- **Interfaz gráfica en JavaFX** para login, registro y reservas.
+- **Comunicación con microservicios mediante HTTP Requests**.
 
 🔹 **Despliegue:**
 - **Docker** para contenedorización (próximo paso).
@@ -36,48 +43,51 @@ Este proyecto consiste en una **aplicación de gestión de reservas de viajes** 
 - **Spring Boot 3+**
 - **Spring Cloud Netflix Eureka**
 - **Spring Cloud Gateway**
+- **Spring Security**
 - **Spring Data JPA (Hibernate)**
 - **MySQL**
+- **JavaFX** (para el frontend)
 - **Docker (próximo paso)**
 - **Postman (para pruebas)**
 
 ---
 
-## 📁 **Estructura del Proyecto**
+## 💁 **Estructura del Proyecto**
 ```
-📦 proyecto-agencia-viajes
- ┣ 📂 hoteles-service
- ┃ ┣ 📂 src/main/java/org/example/hotelesservice
- ┃ ┣ 📜 HotelesServiceApplication.java
- ┣ 📂 vuelos-service
- ┃ ┣ 📂 src/main/java/org/example/vuelosservice
- ┃ ┣ 📜 VuelosServiceApplication.java
- ┣ 📂 reservas-service
- ┃ ┣ 📂 src/main/java/org/example/reservasservice
- ┃ ┣ 📜 ReservasServiceApplication.java
- ┣ 📂 apigateway
- ┃ ┣ 📂 src/main/java/org/example/apigateway
- ┃ ┣ 📜 ApiGatewayApplication.java
- ┣ 📂 eurekaserver
- ┃ ┣ 📂 src/main/java/org/example/eurekaserver
- ┃ ┣ 📜 EurekaServerApplication.java
- ┣ 📜 README.md
- ┣ 📜 .gitignore
- ┗ 📜 pom.xml
+📆 proyecto-agencia-viajes
+ ├📂 hoteles-service
+ ├📂 vuelos-service
+ ├📂 reservas-service
+ ├📂 auth-service
+ ├📂 apigateway
+ ├📂 eurekaserver
+ ├📂 frontend
+ │   ├📂 src/main/java/org/example/frontend
+ │   │   📚 LoginView.java
+ │   │   📚 RegisterView.java
+ │   │   📚 ReservaView.java
+ │   ├📂 src/main/resources
+ │   │   📚 login.fxml
+ │   │   📚 register.fxml
+ │   │   📚 reserva.fxml
+ ├📄 README.md
+ ├📄 .gitignore
+ └📄 pom.xml
 ```
 
 ---
 
 ## ⚡ **Cómo Ejecutar el Proyecto**
 ### **1️⃣ Prerrequisitos**
-✔ Tener **Java 17+** instalado.
-✔ Tener **MySQL** en ejecución y crear las bases de datos:
+✅ Tener **Java 17+** instalado.
+✅ Tener **MySQL** en ejecución y crear las bases de datos:
 ```sql
 CREATE DATABASE hoteles_db;
 CREATE DATABASE vuelos_db;
 CREATE DATABASE reservas_db;
+CREATE DATABASE auth_db;
 ```
-✔ Tener **Maven** instalado y configurado.
+✅ Tener **Maven** instalado y configurado.
 
 ### **2️⃣ Pasos para Ejecutar**
 1. **Clonar el repositorio**:
@@ -95,20 +105,28 @@ CREATE DATABASE reservas_db;
    cd hoteles-service && mvn spring-boot:run
    cd vuelos-service && mvn spring-boot:run
    cd reservas-service && mvn spring-boot:run
+   cd auth-service && mvn spring-boot:run
    ```
 4. **Ejecutar API Gateway:**
    ```bash
    cd apigateway
    mvn spring-boot:run
    ```
+5. **Ejecutar el Frontend JavaFX:**
+   ```bash
+   cd frontend
+   mvn javafx:run
+   ```
 
 ---
 
-## 📌 **Pruebas con Postman**
+## 📀 **Pruebas con Postman**
 Una vez en ejecución, puedes probar los endpoints con **Postman o cURL**:
 
 | Método | Endpoint | Descripción |
 |--------|---------|-------------|
+| `POST` | `http://localhost:8080/auth/register` | Registrar usuario |
+| `POST` | `http://localhost:8080/auth/login` | Iniciar sesión |
 | `GET` | `http://localhost:8080/hoteles` | Listar hoteles |
 | `GET` | `http://localhost:8080/vuelos` | Listar vuelos |
 | `GET` | `http://localhost:8080/reservas` | Listar reservas |
@@ -127,9 +145,9 @@ Ejemplo de `POST /reservas`:
 ---
 
 ## 🔥 **Mejoras Futuras**
-✅ Implementar **Spring Security + JWT** para autenticación. 🔐
+✅ Implementar **Spring Security con JWT** para mejorar autenticación. 🔒
 ✅ Contenerizar con **Docker** para despliegue más eficiente. 🐳
-✅ Desarrollar una interfaz gráfica (React o Angular). 🎨
+✅ Optimizar el frontend con **React o Angular** en el futuro. 🎨
 
 ---
 
@@ -138,7 +156,7 @@ Ejemplo de `POST /reservas`:
 
 ---
 
-## 📜 **Licencia**
+## 🐝 **Licencia**
 Este proyecto está bajo la licencia **MIT**.
 
 👨‍💻 **Desarrollado por [Álvaro del Rosal](https://github.com/tuusuario)**
